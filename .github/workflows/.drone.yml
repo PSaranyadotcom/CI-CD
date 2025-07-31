@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DD_API_KEY: ${{ secrets.DD_API_KEY }}
-      DD_APP_KEY: ${{ secrets.DD_APP_KEY }}
+      DD_API_KEY: dfe4c19a5fcc0e199ca6007cd6d56db2
+      DD_APP_KEY: fa4114c6f5616ada52107cea64ac9ab742be7015
       DD_TEST_PUBLIC_ID: w76-br9-fbc  # Replace with your real test ID
 
     steps:
