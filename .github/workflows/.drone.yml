@@ -1,69 +1,10 @@
-# name: Trigger Datadog Synthetic Test
-
-# on:
-#   workflow_dispatch: # Allows manual run from GitHub UI
-#   push:
-#     branches:
-#       - main  # or your default branch
-
-# jobs:
-#   run-datadog-test:
-#     runs-on: ubuntu-latest
-
-#     env:
-#       DD_API_KEY: ${{ secrets.DD_API_KEY }}
-#       DD_APP_KEY: ${{ secrets.DD_APP_KEY }}
-#       DD_TEST_PUBLIC_ID: w76-br9-fbc  # Replace with your real test ID
-
-#     steps:
-#     - name: Trigger Datadog Synthetic Test
-#   run: |
-#     echo "Triggering Datadog Synthetic Test with ID $DD_TEST_PUBLIC_ID"
-#     RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "https://api.datadoghq.com/api/v1/synthetics/tests/trigger/ci" \
-#       -H "Accept: application/json" \
-#       -H "Content-Type: application/json" \
-#       -H "DD-API-KEY: ${DD_API_KEY}" \
-#       -H "DD-APPLICATION-KEY: ${DD_APP_KEY}" \
-#       -d "{
-#         \"tests\": [
-#           {
-#             \"public_id\": \"${DD_TEST_PUBLIC_ID}\"
-#           }
-#         ]
-#       }")
-#     BODY=$(echo "$RESPONSE" | head -n 1)
-#     STATUS=$(echo "$RESPONSE" | tail -n 1)
-
-#     echo "Datadog API response status: $STATUS"
-#     echo "Datadog API response body: $BODY"
-
-#     if [ "$STATUS" -ne 200 ]; then
-#       echo "Error: Failed to trigger Datadog test"
-#       exit 1
-#     fi
-
-# #       - name: Trigger Datadog Synthetic Test
-# #         run: |
-# #           echo "Triggering Datadog Synthetic Test with ID $DD_TEST_PUBLIC_ID"
-# #           curl -X POST "https://api.datadoghq.com/api/v1/synthetics/tests/trigger/ci" \
-# #             -H "Accept: application/json" \
-# #             -H "Content-Type: application/json" \
-# #             -H "DD-API-KEY: ${DD_API_KEY}" \
-# #             -H "DD-APPLICATION-KEY: ${DD_APP_KEY}" \
-# #             -d "{
-# #               \"tests\": [
-# #                 {
-# #                   \"public_id\": \"${DD_TEST_PUBLIC_ID}\"
-# #                 }
-# #               ]
-# #             }"
 name: Trigger Datadog Synthetic Test
 
 on:
-  workflow_dispatch: # Allows manual trigger from GitHub UI
+  workflow_dispatch: # Allows manual run from GitHub UI
   push:
     branches:
-      - main # or your default branch
+      - main  # or your default branch
 
 jobs:
   run-datadog-test:
@@ -72,17 +13,13 @@ jobs:
     env:
       DD_API_KEY: ${{ secrets.DD_API_KEY }}
       DD_APP_KEY: ${{ secrets.DD_APP_KEY }}
-      DD_TEST_PUBLIC_ID: w76-br9-fbc  # Replace with your real test public ID
-      DATADOG_SITE: "datadoghq.com"   # Change to datadoghq.eu if you're in the EU
+      DD_TEST_PUBLIC_ID: w76-br9-fbc  # Replace with your real test ID
 
     steps:
       - name: Trigger Datadog Synthetic Test
         run: |
           echo "Triggering Datadog Synthetic Test with ID $DD_TEST_PUBLIC_ID"
-
-          API_URL="https://api.${DATADOG_SITE}/api/v1/synthetics/tests/trigger/ci"
-
-          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$API_URL" \
+          curl -X POST "https://api.datadoghq.com/api/v1/synthetics/tests/trigger/ci" \
             -H "Accept: application/json" \
             -H "Content-Type: application/json" \
             -H "DD-API-KEY: ${DD_API_KEY}" \
@@ -93,19 +30,4 @@ jobs:
                   \"public_id\": \"${DD_TEST_PUBLIC_ID}\"
                 }
               ]
-            }")
-
-          BODY=$(echo "$RESPONSE" | head -n 1)
-          STATUS=$(echo "$RESPONSE" | tail -n 1)
-
-          echo "Datadog API response status: $STATUS"
-          echo "Datadog API response body: $BODY"
-
-          if [ "$STATUS" -ne 200 ]; then
-            echo "❌ Error: Failed to trigger Datadog Synthetic test"
-            exit 1
-          else
-            echo "✅ Datadog Synthetic Test triggered successfully"
-          fi
-
-
+            }"
