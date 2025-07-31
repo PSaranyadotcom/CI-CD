@@ -1,63 +1,33 @@
----
-kind: pipeline
-type: docker
-name: build
+name: Trigger Datadog Synthetic Test
 
-steps:
-  - name: docker
-    image: plugins/docker
-    settings:
-      username: labuser
-      repo: registry:5000/labuser/discounts-service
-      tags: latest
-      registry: registry:5000
-      insecure: true
----
-kind: pipeline
-type: exec
-name: deploy-staging
+on:
+  workflow_dispatch: # Allows manual run from GitHub UI
+  push:
+    branches:
+      - main  # or your default branch
 
-platform:
-  os: linux
-  arch: amd64
+jobs:
+  run-datadog-test:
+    runs-on: ubuntu-latest
 
-clone:
-  skip_verify: true
+    env:
+      DD_API_KEY: ${{ secrets.DD_API_KEY }}
+      DD_APP_KEY: ${{ secrets.DD_APP_KEY }}
+      DD_TEST_PUBLIC_ID: w76-br9-fbc  # Replace with your real test ID
 
-steps:
-  - name: pull
-    commands:
-    - cd /root/lab/storedog
-    - docker-compose pull discounts
-  - name: restart
-    commands:
-    - cd /root/lab/storedog
-    - docker-compose up -d --no-deps discounts-staging
-
-depends_on:
-  - build
----
-kind: pipeline
-type: exec
-name: deploy-production
-
-platform:
-  os: linux
-  arch: amd64
-
-clone:
-  skip_verify: true
-
-steps:
-  - name: pull
-    commands:
-    - cd /root/lab/storedog
-    - docker-compose pull discounts
-  - name: restart
-    commands:
-    - cd /root/lab/storedog
-    - docker-compose up -d --no-deps discounts
-
-depends_on:
-  - deploy-staging
-
+    steps:
+      - name: Trigger Datadog Synthetic Test
+        run: |
+          echo "Triggering Datadog Synthetic Test with ID $DD_TEST_PUBLIC_ID"
+          curl -X POST "https://api.datadoghq.com/api/v1/synthetics/tests/trigger/ci" \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/json" \
+            -H "DD-API-KEY: ${DD_API_KEY}" \
+            -H "DD-APPLICATION-KEY: ${DD_APP_KEY}" \
+            -d "{
+              \"tests\": [
+                {
+                  \"public_id\": \"${DD_TEST_PUBLIC_ID}\"
+                }
+              ]
+            }"
