@@ -1,62 +1,26 @@
-# name: Trigger Datadog Synthetic Test
-
-# on:
-#   workflow_dispatch: # Allows manual run from GitHub UI
-#   push:
-#     branches:
-#       - main  # or your default branch
-
-# jobs:
-#   run-datadog-test:
-#     runs-on: ubuntu-latest
-
-#     env:
-#       DD_API_KEY: dfe4c19a5fcc0e199ca6007cd6d56db2
-#       DD_APP_KEY: fa4114c6f5616ada52107cea64ac9ab742be7015
-#       DD_TEST_PUBLIC_ID: w76-br9-fbc  # Replace with your real test ID
-
-#     steps:
-#       - name: Trigger Datadog Synthetic Test
-#         run: |
-#           echo "Triggering Datadog Synthetic Test with ID $DD_TEST_PUBLIC_ID"
-#           curl -X POST "https://api.datadoghq.com/api/v1/synthetics/tests/trigger/ci" \
-#             -H "Accept: application/json" \
-#             -H "Content-Type: application/json" \
-#             -H "DD-API-KEY: ${DD_API_KEY}" \
-#             -H "DD-APPLICATION-KEY: ${DD_APP_KEY}" \
-#             -d "{
-#               \"tests\": [
-#                 {
-#                   \"public_id\": \"${DD_TEST_PUBLIC_ID}\"
-#                 }
-#               ]
-#             }"
 name: Trigger Datadog Synthetic Test
 
 on:
-  workflow_dispatch:
-    inputs:
-      dd_test_public_id:
-        description: 'Datadog Synthetic Test Public ID'
-        required: true
-        type: string
-
+  workflow_dispatch: # Allows manual run from GitHub UI
   push:
     branches:
-      - main
+      - main  # or your default branch
 
 jobs:
   run-datadog-test:
     runs-on: ubuntu-latest
 
     env:
+      # DD_API_KEY: dfe4c19a5fcc0e199ca6007cd6d56db2
+      # DD_APP_KEY: fa4114c6f5616ada52107cea64ac9ab742be7015
       DD_API_KEY: ${{ secrets.DD_API_KEY }}
       DD_APP_KEY: ${{ secrets.DD_APP_KEY }}
+      DD_TEST_PUBLIC_ID: w76-br9-fbc  # Replace with your real test ID
 
     steps:
       - name: Trigger Datadog Synthetic Test
         run: |
-          echo "Triggering Datadog Synthetic Test with ID ${{ github.event.inputs.dd_test_public_id }}"
+          echo "Triggering Datadog Synthetic Test with ID $DD_TEST_PUBLIC_ID"
           curl -X POST "https://api.datadoghq.com/api/v1/synthetics/tests/trigger/ci" \
             -H "Accept: application/json" \
             -H "Content-Type: application/json" \
@@ -65,7 +29,7 @@ jobs:
             -d "{
               \"tests\": [
                 {
-                  \"public_id\": \"${{ github.event.inputs.dd_test_public_id }}\"
+                  \"public_id\": \"${DD_TEST_PUBLIC_ID}\"
                 }
               ]
             }"
