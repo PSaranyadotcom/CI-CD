@@ -48,7 +48,7 @@ jobs:
     env:
       DD_API_KEY: ${{ secrets.DD_API_KEY }}
       DD_APP_KEY: ${{ secrets.DD_APP_KEY }}
-      TEST_TAG: "ci"   # Replace this with your actual tag
+      TEST_TAG: "CI/CD"   # Replace this with your actual tag
 
     steps:
       - name: Install jq (JSON parser)
