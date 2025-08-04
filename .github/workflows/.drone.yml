@@ -33,6 +33,7 @@
 #                 }
 #               ]
 #             }"
+
 name: Trigger Datadog Synthetic Tests by Tag in Parallel
 
 on:
